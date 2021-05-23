@@ -1,16 +1,45 @@
 // import createError from 'http-errors';
-import express, { NextFunction, Request, Response } from 'express';
+import express, { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
+// import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import fs from 'fs';
 import path from "path";
 
+// let indexRouter = require('./routes/index');
+// let usersRouter = require('./routes/users');
+
 let app = express();
+
+// view engine setup
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+// app.use(express.static(path.join(__dirname, 'public')));
+
+// app.use('/', indexRouter);
+// app.use('/users', usersRouter);
+
+// catch 404 and forward to error handler
+// app.use(function (req, res, next) {
+//   next(createError(404));
+// });
+
+// error handler
+// app.use((err:ErrorRequestHandler, req:Request, res:Response, next:NextFunction) => {
+//   // set locals, only providing error in development
+//   res.locals.message = err.message;
+//   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+//   // render the error page
+//   res.status(err.status || 500);
+//   res.render('error');
+// });
+
 
 interface OrganisationDB {
   organisation: string,
@@ -27,7 +56,29 @@ interface OrganisationDB {
 }
 
 let filePath = path.join(__dirname, './database.json')
-console.log(filePath)
+
+// get all organisations
+app.get('/orgs', (req: Request, res: Response) => {
+  const database = fs.readFileSync(filePath, "utf-8");
+  const parsedData = JSON.parse(database);
+  res.status(200).json({
+    status: 'success',
+    data: parsedData
+  });
+})
+
+// get single organisation
+app.get('/orgs/:id', (req: Request, res: Response) => {
+  const database = fs.readFileSync(filePath, "utf-8");
+  // get the id of the organisation
+  const organisation = JSON.parse(database).find((org: { id: number; }) => org.id === parseInt(req.params.id));
+  if (!organisation) return res.status(404).send("the organisation with the given ID was not found");
+
+  res.status(200).json({
+    status: 'success',
+    data: organisation
+  })
+})
 
 // add a new organisation
 app.post('/orgs', (req: Request, res: Response) => {
@@ -63,29 +114,6 @@ app.post('/orgs', (req: Request, res: Response) => {
   }
 })
 
-// get all organisations
-app.get('/orgs', (req: Request, res: Response) => {
-  const database = fs.readFileSync(filePath, "utf-8");
-  const parsedData = JSON.parse(database);
-  res.status(200).json({
-    status: 'success',
-    data: parsedData
-  });
-})
-
-// get single organisation
-app.get('/orgs/:id', (req: Request, res: Response) => {
-  const database = fs.readFileSync(filePath, "utf-8");
-  // get the id of the organisation
-  const organisation = JSON.parse(database).find((org: { id: number; }) => org.id === parseInt(req.params.id));
-  if (!organisation) return res.status(404).send("the organisation with the given ID was not found");
-
-  res.status(200).json({
-    status: 'success',
-    data: organisation
-  })
-})
-
 // update an organisation
 app.put('/orgs/:id', (req: Request, res: Response) => {
   const database = fs.readFileSync(filePath, "utf-8");
@@ -112,10 +140,10 @@ app.delete('/orgs/:id', (req: Request, res: Response) => {
   // get the id of the organisation
   const organisation = JSON.parse(database).find((org: { id: number; }) => org.id === parseInt(req.params.id));
   const organisationIndex = JSON.parse(database).findIndex((org: { id: number; }) => org.id === parseInt(req.params.id));
+  console.log(organisationIndex);
 
-
-  if (Object.keys(organisation).length === 0) return res.status(404).send({
-    status: 'error',
+  if (!organisation) return res.status(404).send({
+    status: 'success',
     message: 'could not find org'
   });
 

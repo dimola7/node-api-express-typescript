@@ -1,3 +1,20 @@
 [
-  
+  {
+    "organisation": "code aaninhdja",
+    "createdAt": "2021-05-01T23:24:54.138Z",
+    "products": [
+      "developers"
+    ],
+    "marketValue": "100%",
+    "address": "lekki",
+    "ceo": "cn",
+    "country": "Taiwan",
+    "id": 1,
+    "noOfEmployees": 2,
+    "employees": [
+      "james bond",
+      "jackie chan"
+    ],
+    "updatedAt": "2021-05-02T18:45:14.622Z"
+  }
 ]

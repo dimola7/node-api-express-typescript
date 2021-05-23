@@ -3,11 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node ./bin/www",
     "dev": "yarn ts-node server.ts",
     "test": "jest"
   },
-  "type": "commonjs",
   "dependencies": {
     "@babel/core": "^7.14.0",
     "@babel/preset-env": "^7.14.0",
